@@ -1,6 +1,10 @@
 // Cloudflare Pages Function — /api/lead-notify
 // For connect.meshieldfinancial.com — sends 2 emails via Brevo:
 // 1) Notification to Miguelson  2) Confirmation to the client
+//
+// UPDATED: added plain-text fallback + physical address footer on the
+// client confirmation email — both are strong anti-spam signals that
+// help first-time recipients land in the inbox instead of spam.
 
 export async function onRequestPost(context) {
   const CORS = {
@@ -54,6 +58,48 @@ export async function onRequestPost(context) {
     });
 
     // ── Email 2: Confirm to the client ─────────────────────────────────────
+    const serviceLine = service && service !== 'Not specified' ? ` about ${service}` : '';
+
+    const confirmHtml = `
+      <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#FAF7F1;border-radius:16px;overflow:hidden;">
+        <div style="background:#0B1D3A;padding:24px 28px;text-align:center;">
+          <div style="font-family:Georgia,serif;font-size:1.1rem;color:#fff;font-weight:700;">ME Shield Financial Services</div>
+        </div>
+        <div style="padding:30px 28px;">
+          <p style="font-size:1rem;color:#0B1D3A;">Hi ${name},</p>
+          <p style="font-size:.92rem;color:#555;line-height:1.7;">
+            Thank you for reaching out! I received your request${serviceLine} and will personally follow up with you within 24 hours.
+          </p>
+          <p style="font-size:.92rem;color:#555;line-height:1.7;">
+            If you need to reach me sooner, feel free to call or text (407) 267-2652.
+          </p>
+          <p style="font-size:.92rem;color:#555;">— Miguelson Etienne</p>
+        </div>
+        <div style="padding:16px 28px 24px;border-top:1px solid rgba(11,29,58,.08);">
+          <p style="font-size:.68rem;color:#999;line-height:1.6;margin:0;">
+            ME Shield Financial Services · Apopka, FL 32712 · (407) 267-2652<br/>
+            You're receiving this because you requested a consultation at connect.meshieldfinancial.com.
+            If this wasn't you, please disregard this email or reply to let us know.
+          </p>
+        </div>
+      </div>
+    `;
+
+    const confirmText =
+`Hi ${name},
+
+Thank you for reaching out! I received your request${serviceLine} and will personally follow up with you within 24 hours.
+
+If you need to reach me sooner, feel free to call or text (407) 267-2652.
+
+— Miguelson Etienne
+ME Shield Financial Services
+
+--
+ME Shield Financial Services · Apopka, FL 32712 · (407) 267-2652
+You're receiving this because you requested a consultation at connect.meshieldfinancial.com.
+If this wasn't you, please disregard this email or reply to let us know.`;
+
     const confirmRes = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
       headers: { 'api-key': BREVO_KEY, 'Content-Type': 'application/json' },
@@ -61,23 +107,8 @@ export async function onRequestPost(context) {
         sender: { name: 'Miguelson Etienne — ME Shield', email: 'info@meshieldfinancial.com' },
         to: [{ email: email, name: name }],
         subject: `Thanks for reaching out, ${name}!`,
-        htmlContent: `
-          <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#FAF7F1;border-radius:16px;overflow:hidden;">
-            <div style="background:#0B1D3A;padding:24px 28px;text-align:center;">
-              <div style="font-family:Georgia,serif;font-size:1.1rem;color:#fff;font-weight:700;">ME Shield Financial Services</div>
-            </div>
-            <div style="padding:30px 28px;">
-              <p style="font-size:1rem;color:#0B1D3A;">Hi ${name},</p>
-              <p style="font-size:.92rem;color:#555;line-height:1.7;">
-                Thank you for reaching out! I received your request${service && service !== 'Not specified' ? ` about <strong>${service}</strong>` : ''} and will personally follow up with you within 24 hours.
-              </p>
-              <p style="font-size:.92rem;color:#555;line-height:1.7;">
-                If you need to reach me sooner, feel free to call or text (407) 267-2652.
-              </p>
-              <p style="font-size:.92rem;color:#555;">— Miguelson Etienne</p>
-            </div>
-          </div>
-        `,
+        htmlContent: confirmHtml,
+        textContent: confirmText,
       }),
     });
 
