@@ -354,15 +354,6 @@
     transition:transform .15s ease;
   }
   .lead-submit:active{transform:scale(.985);}
-  .lead-error{
-    background:#fdecea;
-    border:1px solid #f4c7c3;
-    color:#a33;
-    font-size:13px;
-    padding:10px 14px;
-    border-radius:10px;
-    margin-bottom:10px;
-  }
   .lead-success{
     display:none;
     text-align:center;
@@ -443,7 +434,11 @@
     <p class="lead-title">Want a free consultation?</p>
     <p class="lead-sub">Leave your info and I'll personally follow up — usually within 24 hours.</p>
 
-    <form id="leadForm" onsubmit="handleLeadSubmit(event)">
+    <iframe name="hidden_iframe_lead" style="display:none;"></iframe>
+
+    <form id="leadForm" method="POST"
+      action="https://d95daacd.sibforms.com/serve/MUIFAHK9mbfTz7NT4NmoGQRdq0HRHnfAyTuFstSolDZCjOBgnDmdgLfmqgKAcBXk92nVGgYAB2mFWwqDjKbmSwBHWmffeZIlIoKQjLaiBTBDfy3qKvQ9DpT6kfbBmdNviqdnRkrBH-Y0BZHZrQ4Om0hg8E5SnOZKP_zi_5obtHazll-sl8-UXLGTFKB2EYJgZKkOV0pKkZC5prxZfg=="
+      target="hidden_iframe_lead" onsubmit="handleLeadSubmit(event)">
 
       <div class="lead-field">
         <input type="text" id="FIRSTNAME" name="FIRSTNAME" placeholder="First name" autocomplete="given-name" required>
@@ -452,11 +447,11 @@
         <input type="email" id="EMAIL" name="EMAIL" placeholder="Email address" autocomplete="email" required>
       </div>
       <div class="lead-field">
-        <input type="tel" id="SMS" name="SMS" placeholder="Phone (optional)" autocomplete="tel">
+        <input type="tel" id="SMS" name="SMS" placeholder="Phone number" autocomplete="tel" required>
       </div>
       <div class="lead-field">
-        <select id="SERVICE_INTERESTED" name="SERVICE_INTERESTED">
-          <option value="">What can I help with? (optional)</option>
+        <select id="SERVICE_INTERESTED" name="SERVICE_INTERESTED" required>
+          <option value="" disabled selected>What can I help with?</option>
           <option value="Insurance">Insurance</option>
           <option value="Tax Preparation">Tax Preparation</option>
           <option value="Immigration Forms Filing">Immigration Forms Filing</option>
@@ -468,10 +463,10 @@
 
       <!-- honeypot - leave blank, hidden from real visitors -->
       <input type="text" name="email_address_check" value="" class="lead-honeypot" tabindex="-1" autocomplete="off">
+      <input type="hidden" name="locale" value="en">
+      <input type="hidden" name="html_type" value="simple">
 
-      <div id="leadError" class="lead-error" style="display:none;"></div>
-
-      <button type="submit" class="lead-submit" id="leadSubmitBtn">Send my info</button>
+      <button type="submit" class="lead-submit">Send my info</button>
     </form>
 
     <div id="leadSuccess" class="lead-success">
@@ -483,45 +478,11 @@
 </div>
 
 <script>
-async function handleLeadSubmit(e){
-  e.preventDefault();
-  const btn = document.getElementById('leadSubmitBtn');
-  const errorBox = document.getElementById('leadError');
-  errorBox.style.display = 'none';
-  btn.disabled = true;
-  btn.textContent = 'Sending...';
-
-  const payload = {
-    FIRSTNAME: document.getElementById('FIRSTNAME').value,
-    EMAIL: document.getElementById('EMAIL').value,
-    SMS: document.getElementById('SMS').value,
-    SERVICE_INTERESTED: document.getElementById('SERVICE_INTERESTED').value,
-    email_address_check: document.querySelector('[name="email_address_check"]').value,
-  };
-
-  try {
-    const res = await fetch('/api/lead-notify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json();
-
-    if (data.success) {
-      document.getElementById('leadForm').style.display = 'none';
-      document.getElementById('leadSuccess').classList.add('show');
-    } else {
-      errorBox.textContent = data.message || 'Something went wrong. Please try again or call (407) 267-2652.';
-      errorBox.style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = 'Send my info';
-    }
-  } catch (err) {
-    errorBox.textContent = 'Connection error. Please try again or call (407) 267-2652.';
-    errorBox.style.display = 'block';
-    btn.disabled = false;
-    btn.textContent = 'Send my info';
-  }
+function handleLeadSubmit(e){
+  setTimeout(function(){
+    document.getElementById('leadForm').style.display = 'none';
+    document.getElementById('leadSuccess').classList.add('show');
+  }, 500);
 }
 </script>
 
