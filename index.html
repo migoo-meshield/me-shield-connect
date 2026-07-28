@@ -181,8 +181,8 @@
 
   .actions{
     display:grid;
-    grid-template-columns:repeat(3, 1fr);
-    gap:10px;
+    grid-template-columns:repeat(4, 1fr);
+    gap:8px;
     margin-bottom:14px;
   }
   .btn-action{
@@ -223,6 +223,27 @@
   .btn-primary svg{width:18px;height:18px;stroke:var(--gold-light);}
   .btn-primary:active{transform:scale(.985);}
 
+  .btn-secondary{
+    background:#fff;
+    color:var(--navy, #0b1d3a);
+    border:1.5px solid var(--navy, #0b1d3a);
+    box-shadow:none;
+    cursor:pointer;
+    font-family:inherit;
+    margin-top:-10px;
+  }
+  .btn-secondary svg{ stroke:var(--navy, #0b1d3a); }
+  .btn-secondary:active{ transform:scale(.985); background:#f8f5ee; }
+
+  .share-copied{
+    display:none;
+    text-align:center;
+    font-size:12.5px;
+    color:#2e6b52;
+    margin:-14px 0 20px;
+  }
+  .share-copied.show{ display:block; }
+
   .divider{
     display:flex;
     align-items:center;
@@ -261,7 +282,10 @@
   .social-btn:active{transform:scale(.93); background:var(--navy); border-color:var(--navy); color:var(--gold-light);}
 
   .website{
-    display:block;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
     text-align:center;
     font-size:13px;
     font-weight:600;
@@ -270,6 +294,7 @@
     border-top:1px solid var(--line);
     padding-top:16px;
   }
+  .website svg{width:16px;height:16px;stroke:var(--navy);flex-shrink:0;}
   .website span{color:var(--gold); margin-left:4px;}
 
   footer{
@@ -338,6 +363,33 @@
     opacity:0;
     overflow:hidden;
   }
+  .lead-consent{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    font-size:12px;
+    line-height:1.5;
+    color:#5b5648;
+    margin:2px 0 12px;
+    cursor:pointer;
+  }
+  .lead-consent input{
+    margin-top:2px;
+    flex-shrink:0;
+    accent-color:var(--navy, #0b1d3a);
+  }
+  .lead-error{
+    display:none;
+    background:#fdecec;
+    color:#8c1f1f;
+    border-radius:8px;
+    padding:12px 14px;
+    font-size:13px;
+    line-height:1.5;
+    margin-top:10px;
+  }
+  .lead-error a{ color:#8c1f1f; font-weight:700; }
+  .lead-submit[disabled]{ opacity:.6; }
   .lead-submit{
     display:block;
     width:100%;
@@ -402,12 +454,22 @@
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5c0 4.7-4 8.5-9 8.5-1.5 0-2.9-.3-4.1-.9L3 20l1.2-4.4A8.9 8.9 0 0 1 3 11.5C3 6.8 7 3 12 3s9 3.8 9 8.5z"/></svg>
         Message
       </a>
+      <a class="btn-action" href="https://meshieldfinancial.com/book.html" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Book
+      </a>
     </div>
 
     <a class="btn-primary" href="data:text/vcard;charset=utf-8;base64,QkVHSU46VkNBUkQKVkVSU0lPTjozLjAKTjpFdGllbm5lO01pZ3VlbHNvbjs7OwpGTjpNaWd1ZWxzb24gRXRpZW5uZQpPUkc6TUUgU2hpZWxkIEZpbmFuY2lhbCBTZXJ2aWNlcwpUSVRMRTpMaWNlbnNlZCBJbnN1cmFuY2UgQ29uc3VsdGFudCAtIFRheCBTcGVjaWFsaXN0IC0gSW5maW5pdGUgQmFua2luZyBQcmFjdGl0aW9uZXIKVEVMO1RZUEU9Q0VMTCxWT0lDRTorMTQwNzI2NzI2NTIKRU1BSUw7VFlQRT1JTlRFUk5FVDptZXNoaWVsZHNlcnZpY2VzQGdtYWlsLmNvbQpVUkw6aHR0cHM6Ly9tZXNoaWVsZGZpbmFuY2lhbC5jb20KQURSO1RZUEU9V09SSzo7OztBcG9wa2E7Rkw7MzI3MTI7VVNBCk5PVEU6TGljZW5zZWQgSW5zdXJhbmNlIENvbnN1bHRhbnQgLSBUYXggU3BlY2lhbGlzdCAtIEluZmluaXRlIEJhbmtpbmcgUHJhY3RpdGlvbmVyXCwgYWZmaWxpYXRlZCB3aXRoIEpXQU5BSVggR1JPVVAuIE1FIFNoaWVsZCBGaW5hbmNpYWwgU2VydmljZXMgLSBJbnN1cmFuY2VcLCBUYXggUHJlcGFyYXRpb25cLCBCdXNpbmVzcyBGaWxpbmdcLCBJbW1pZ3JhdGlvbiBGb3JtcyBGaWxpbmdcLCBJbmZpbml0ZSBCYW5raW5nLgpFTkQ6VkNBUkQK" download="miguelson-etienne.vcf">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
       Save my contact
     </a>
+
+    <button type="button" id="shareCardBtn" class="btn-primary btn-secondary">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-3.9M8.6 13.4l6.8 3.9"/></svg>
+      Share this card
+    </button>
+    <p id="shareCopied" class="share-copied">Link copied — paste it anywhere to share.</p>
 
     <div class="divider">Follow along</div>
 
@@ -426,8 +488,18 @@
       </a>
     </div>
 
-    <a class="website" href="https://meshieldfinancial.com" target="_blank" rel="noopener">meshieldfinancial.com<span>→</span></a>
-    <a class="website" href="https://meshieldfinancial.com/infinite-banking.html" target="_blank" rel="noopener" style="margin-top:6px;">Learn About Infinite Banking<span>→</span></a>
+    <a class="website" href="https://meshieldfinancial.com" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.7-3.8-9s1.3-6.4 3.8-9z"/></svg>
+      meshieldfinancial.com<span>→</span>
+    </a>
+    <a class="website" href="https://meshieldfinancial.com/services.html" target="_blank" rel="noopener" style="margin-top:6px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9l-2 5-5 2 2-5z"/></svg>
+      Explore My Services<span>→</span>
+    </a>
+    <a class="website" href="https://meshieldfinancial.com/infinite-banking.html" target="_blank" rel="noopener" style="margin-top:6px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12c0-3 2-4 4-2 2 2 2 2 4 0 2-2 4-1 4 2s-2 4-4 2c-2-2-2-2-4 0-2 2-4 1-4-2z"/></svg>
+      Learn About Infinite Banking<span>→</span>
+    </a>
   </div>
 
   <div class="panel lead-panel">
@@ -438,7 +510,7 @@
 
     <form id="leadForm" method="POST"
       action="https://d95daacd.sibforms.com/serve/MUIFAHK9mbfTz7NT4NmoGQRdq0HRHnfAyTuFstSolDZCjOBgnDmdgLfmqgKAcBXk92nVGgYAB2mFWwqDjKbmSwBHWmffeZIlIoKQjLaiBTBDfy3qKvQ9DpT6kfbBmdNviqdnRkrBH-Y0BZHZrQ4Om0hg8E5SnOZKP_zi_5obtHazll-sl8-UXLGTFKB2EYJgZKkOV0pKkZC5prxZfg=="
-      target="hidden_iframe_lead" onsubmit="handleLeadSubmit(event)">
+      target="hidden_iframe_lead">
 
       <div class="lead-field">
         <input type="text" id="FIRSTNAME" name="FIRSTNAME" placeholder="First name" autocomplete="given-name" required>
@@ -450,16 +522,46 @@
         <input type="tel" id="SMS" name="SMS" placeholder="Phone number" autocomplete="tel" required>
       </div>
       <div class="lead-field">
-        <select id="SERVICE_INTERESTED" name="SERVICE_INTERESTED" required>
-          <option value="" disabled selected>What can I help with?</option>
-          <option value="Insurance">Insurance</option>
-          <option value="Tax Preparation">Tax Preparation</option>
-          <option value="Immigration Forms Filing">Immigration Forms Filing</option>
-          <option value="Business Filing">Business Filing</option>
-          <option value="Infinite Banking (IBC)">Infinite Banking (IBC)</option>
-          <option value="Not sure yet">Not sure yet</option>
+        <select id="STATE" name="STATE" required>
+          <option value="" disabled selected>Your state</option>
+          <option value="FL">Florida</option>
+          <option value="MA">Massachusetts</option>
+          <option value="NJ">New Jersey</option>
+          <option value="" disabled>──────────</option>
+          <option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option>
+          <option value="AR">Arkansas</option><option value="CA">California</option><option value="CO">Colorado</option>
+          <option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="DC">District of Columbia</option>
+          <option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option>
+          <option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option>
+          <option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option>
+          <option value="ME">Maine</option><option value="MD">Maryland</option><option value="MI">Michigan</option>
+          <option value="MN">Minnesota</option><option value="MS">Mississippi</option><option value="MO">Missouri</option>
+          <option value="MT">Montana</option><option value="NE">Nebraska</option><option value="NV">Nevada</option>
+          <option value="NH">New Hampshire</option><option value="NM">New Mexico</option><option value="NY">New York</option>
+          <option value="NC">North Carolina</option><option value="ND">North Dakota</option><option value="OH">Ohio</option>
+          <option value="OK">Oklahoma</option><option value="OR">Oregon</option><option value="PA">Pennsylvania</option>
+          <option value="RI">Rhode Island</option><option value="SC">South Carolina</option><option value="SD">South Dakota</option>
+          <option value="TN">Tennessee</option><option value="TX">Texas</option><option value="UT">Utah</option>
+          <option value="VT">Vermont</option><option value="VA">Virginia</option><option value="WA">Washington</option>
+          <option value="WV">West Virginia</option><option value="WI">Wisconsin</option><option value="WY">Wyoming</option>
         </select>
       </div>
+      <div class="lead-field">
+        <select id="SERVICE_INTERESTED" name="SERVICE_INTERESTED" required>
+          <option value="" disabled selected>What can I help with?</option>
+          <option value="insurance">Insurance</option>
+          <option value="tax">Tax Preparation</option>
+          <option value="immigration">Immigration Forms Filing</option>
+          <option value="business">Business Filing</option>
+          <option value="ibc">Infinite Banking (IBC)</option>
+          <option value="other">Not sure yet</option>
+        </select>
+      </div>
+
+      <label class="lead-consent">
+        <input type="checkbox" id="CONSENT" required>
+        <span>I agree that ME Shield Financial Services may contact me by phone, text, or email about my request.</span>
+      </label>
 
       <!-- honeypot - leave blank, hidden from real visitors -->
       <input type="text" name="email_address_check" value="" class="lead-honeypot" tabindex="-1" autocomplete="off">
@@ -474,16 +576,163 @@
       <p style="margin:0; font-weight:600; color:var(--navy);">Got it — thank you!</p>
       <p style="margin:4px 0 0; font-size:13px; color:#5b5648;">I'll be in touch soon.</p>
     </div>
+
+    <div id="leadError" class="lead-error">
+      <strong>We couldn't send your info.</strong><br/>
+      Please call <a href="tel:+14072672652">(407) 267-2652</a> or message on
+      <a href="https://wa.me/message/JUQP57VLU3T2B1">WhatsApp</a> so nothing is lost.
+    </div>
   </div>
 </div>
 
 <script>
-function handleLeadSubmit(e){
-  setTimeout(function(){
-    document.getElementById('leadForm').style.display = 'none';
-    document.getElementById('leadSuccess').classList.add('show');
-  }, 500);
-}
+  // ── ME Shield OS — gated submission ─────────────────────────────────────
+  // This page lives on a SEPARATE Cloudflare Pages project from the main
+  // site, so it calls the Worker with an ABSOLUTE url, not a relative path.
+  // The Worker's ALLOWED_ORIGINS list must include this page's origin
+  // (connect.meshieldfinancial.com) or the browser will block the response
+  // as a CORS violation — that change was made in intake.js alongside this.
+  const INTAKE_ENDPOINT = 'https://meshieldfinancial.com/api/intake';
+
+  // Last-resort fallback only — the same Brevo form endpoint this page used
+  // before. Used only if the Worker itself cannot be reached at all.
+  const BREVO_FORM_ACTION = 'https://d95daacd.sibforms.com/serve/MUIFAHK9mbfTz7NT4NmoGQRdq0HRHnfAyTuFstSolDZCjOBgnDmdgLfmqgKAcBXk92nVGgYAB2mFWwqDjKbmSwBHWmffeZIlIoKQjLaiBTBDfy3qKvQ9DpT6kfbBmdNviqdnRkrBH-Y0BZHZrQ4Om0hg8E5SnOZKP_zi_5obtHazll-sl8-UXLGTFKB2EYJgZKkOV0pKkZC5prxZfg==';
+
+  const form = document.getElementById('leadForm');
+  const successEl = document.getElementById('leadSuccess');
+  const errorEl = document.getElementById('leadError');
+  const submitBtn = form.querySelector('.lead-submit');
+
+  function showSuccess(){
+    errorEl.classList.remove('show'); errorEl.style.display = 'none';
+    form.style.display = 'none';
+    successEl.classList.add('show');
+  }
+  function showError(){
+    successEl.classList.remove('show');
+    errorEl.style.display = 'block';
+  }
+
+  async function handleLeadSubmit(e){
+    e.preventDefault();
+
+    // Honeypot — invisible to real visitors, bots tend to fill every field.
+    // Silently pretend success without sending anything anywhere.
+    const honeypot = form.querySelector('[name="email_address_check"]').value;
+    if (honeypot) { showSuccess(); return; }
+
+    const firstName = document.getElementById('FIRSTNAME').value.trim();
+    const email     = document.getElementById('EMAIL').value.trim();
+    const phone     = document.getElementById('SMS').value.trim();
+    const state     = document.getElementById('STATE').value;
+    const service   = document.getElementById('SERVICE_INTERESTED').value;
+    const consent   = document.getElementById('CONSENT').checked;
+
+    if (!firstName || !email || !state || !service) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+    if (!consent) {
+      alert('Please check the box so I can follow up with you.');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+
+    // ── Attempt 1: the gated Worker (normal path) ──────────────────────────
+    try {
+      const res = await fetch(INTAKE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          first_name: firstName,
+          email: email,
+          phone: phone,
+          state: state,
+          service: service,
+          language: 'english',
+          consent: true,
+          company_website: '',
+          page_url: window.location.href
+        })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.ok) {
+        showSuccess();
+        submitBtn.disabled = false; submitBtn.textContent = 'Send my info';
+        return;
+      }
+      showError();
+      submitBtn.disabled = false; submitBtn.textContent = 'Send my info';
+      return;
+    } catch (err) {
+      // Worker unreachable at all — fall through to the last-resort path.
+    }
+
+    // ── Attempt 2: last resort — straight to Brevo, the original way ──────
+    try {
+      const params = new URLSearchParams();
+      params.append('FIRSTNAME', firstName);
+      params.append('EMAIL', email);
+      if (phone) {
+        const digits = phone.replace(/\D/g, '');
+        params.append('SMS__COUNTRY_CODE', '+1');
+        params.append('SMS', digits.length === 10 ? '1' + digits : digits);
+      }
+      params.append('SERVICE_INTERESTED', service);
+      params.append('STATE', state);
+      params.append('email_address_check', '');
+      params.append('locale', 'en');
+      params.append('html_type', 'simple');
+
+      await fetch(BREVO_FORM_ACTION, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString()
+      });
+      showSuccess();
+    } catch (err) {
+      showError();
+    }
+    submitBtn.disabled = false; submitBtn.textContent = 'Send my info';
+  }
+
+  form.addEventListener('submit', handleLeadSubmit);
+
+  // ── Share Card — native share sheet, with a copy-to-clipboard fallback
+  // for browsers (mostly desktop) that don't support the Web Share API.
+  // Shares the LIVE page link, not a static file, so whoever receives it
+  // always sees Migoo's current info, not a stale snapshot.
+  const shareBtn = document.getElementById('shareCardBtn');
+  const shareCopiedMsg = document.getElementById('shareCopied');
+
+  shareBtn.addEventListener('click', async () => {
+    const shareData = {
+      title: 'Miguelson Etienne — ME Shield Financial Services',
+      text: 'Here\'s my digital business card — call, message, or book a free consultation.',
+      url: window.location.href
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        // User canceled the share sheet — not an error, do nothing.
+      }
+      return;
+    }
+
+    // Fallback: copy the link and show a brief confirmation.
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      shareCopiedMsg.classList.add('show');
+      setTimeout(() => shareCopiedMsg.classList.remove('show'), 4000);
+    } catch (err) {
+      alert('Copy this link to share: ' + window.location.href);
+    }
+  });
 </script>
 
 <footer>
