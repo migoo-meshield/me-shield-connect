@@ -522,6 +522,10 @@
         <input type="tel" id="SMS" name="SMS" placeholder="Phone number" autocomplete="tel" required>
       </div>
       <div class="lead-field">
+        <label for="DOB" style="display:block; margin:0 0 6px; font-size:13px; color:#5b5648;">Date of Birth / Dat Nesans <span style="font-weight:400;">(optional)</span></label>
+        <input type="date" id="DOB" name="DOB" autocomplete="bday">
+      </div>
+      <div class="lead-field">
         <select id="STATE" name="STATE" required>
           <option value="" disabled selected>Your state</option>
           <option value="FL">Florida</option>
@@ -624,6 +628,7 @@
     const firstName = document.getElementById('FIRSTNAME').value.trim();
     const email     = document.getElementById('EMAIL').value.trim();
     const phone     = document.getElementById('SMS').value.trim();
+    const dob       = document.getElementById('DOB').value;
     const state     = document.getElementById('STATE').value;
     const service   = document.getElementById('SERVICE_INTERESTED').value;
     const consent   = document.getElementById('CONSENT').checked;
@@ -649,6 +654,8 @@
           first_name: firstName,
           email: email,
           phone: phone,
+          dob: dob,
+          date_of_birth: dob,
           state: state,
           service: service,
           language: 'english',
@@ -680,6 +687,7 @@
         params.append('SMS__COUNTRY_CODE', '+1');
         params.append('SMS', digits.length === 10 ? '1' + digits : digits);
       }
+      if (dob) params.append('DOB', dob);
       params.append('SERVICE_INTERESTED', service);
       params.append('STATE', state);
       params.append('email_address_check', '');
