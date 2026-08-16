@@ -356,6 +356,19 @@
     outline:none;
     border-color:var(--gold);
   }
+  .lead-field input[aria-invalid="true"],
+  .lead-field select[aria-invalid="true"]{
+    border-color:#b42318;
+    box-shadow:0 0 0 2px rgba(180,35,24,.1);
+  }
+  .field-error{
+    display:none;
+    color:#8c1f1f;
+    font-size:12px;
+    line-height:1.4;
+    margin:5px 2px 0;
+  }
+  .field-error.show{display:block;}
   .lead-honeypot{
     position:absolute;
     left:-9999px;
@@ -581,10 +594,9 @@
       <p style="margin:4px 0 0; font-size:13px; color:#5b5648;">I'll be in touch soon.</p>
     </div>
 
-    <div id="leadError" class="lead-error">
-      <strong>We couldn't send your info.</strong><br/>
-      Please call <a href="tel:+14072672652">(407) 267-2652</a> or message on
-      <a href="https://wa.me/message/JUQP57VLU3T2B1">WhatsApp</a> so nothing is lost.
+    <div id="leadError" class="lead-error" role="alert" aria-live="assertive">
+      <strong id="leadErrorTitle">Please correct the highlighted information.</strong><br/>
+      <span id="leadErrorMessage"></span>
     </div>
   </div>
 </div>
@@ -598,27 +610,124 @@
   // as a CORS violation — that change was made in intake.js alongside this.
   const INTAKE_ENDPOINT = 'https://meshieldfinancial.com/api/intake';
 
-  // Last-resort fallback only — the same Brevo form endpoint this page used
-  // before. Used only if the Worker itself cannot be reached at all.
-  const BREVO_FORM_ACTION = 'https://d95daacd.sibforms.com/serve/MUIFAHK9mbfTz7NT4NmoGQRdq0HRHnfAyTuFstSolDZCjOBgnDmdgLfmqgKAcBXk92nVGgYAB2mFWwqDjKbmSwBHWmffeZIlIoKQjLaiBTBDfy3qKvQ9DpT6kfbBmdNviqdnRkrBH-Y0BZHZrQ4Om0hg8E5SnOZKP_zi_5obtHazll-sl8-UXLGTFKB2EYJgZKkOV0pKkZC5prxZfg==';
 
   const form = document.getElementById('leadForm');
   const successEl = document.getElementById('leadSuccess');
   const errorEl = document.getElementById('leadError');
+  const errorTitleEl = document.getElementById('leadErrorTitle');
+  const errorMessageEl = document.getElementById('leadErrorMessage');
   const submitBtn = form.querySelector('.lead-submit');
+  const DRAFT_KEY = 'mes-connect-lead-draft-v1';
+  const FIELD_MAP = {
+    first_name: 'FIRSTNAME', email: 'EMAIL', phone: 'SMS',
+    date_of_birth: 'DOB', dob: 'DOB', state: 'STATE',
+    service: 'SERVICE_INTERESTED', consent: 'CONSENT'
+  };
+  const DRAFT_FIELDS = ['FIRSTNAME', 'EMAIL', 'SMS', 'DOB', 'STATE', 'SERVICE_INTERESTED'];
+
+  function installFieldErrors(){
+    Object.values(FIELD_MAP).forEach((id) => {
+      const input = document.getElementById(id);
+      if (!input || document.getElementById(id + '-error')) return;
+      const message = document.createElement('p');
+      message.id = id + '-error';
+      message.className = 'field-error';
+      message.setAttribute('aria-live', 'polite');
+      const host = id === 'CONSENT' ? input.closest('.lead-consent') : input.closest('.lead-field');
+      host.insertAdjacentElement('afterend', message);
+    });
+  }
+
+  function clearErrors(){
+    errorEl.style.display = 'none';
+    Object.values(FIELD_MAP).forEach((id) => {
+      const input = document.getElementById(id);
+      const message = document.getElementById(id + '-error');
+      if (input) { input.removeAttribute('aria-invalid'); input.removeAttribute('aria-describedby'); }
+      if (message) { message.textContent = ''; message.classList.remove('show'); }
+    });
+  }
+
+  function setFieldError(field, message){
+    const id = FIELD_MAP[field];
+    const input = id && document.getElementById(id);
+    const messageEl = id && document.getElementById(id + '-error');
+    if (!input || !messageEl) return;
+    input.setAttribute('aria-invalid', 'true');
+    input.setAttribute('aria-describedby', messageEl.id);
+    messageEl.textContent = message;
+    messageEl.classList.add('show');
+  }
+
+  function saveDraft(){
+    try {
+      const draft = {};
+      DRAFT_FIELDS.forEach((id) => { draft[id] = document.getElementById(id).value; });
+      draft.saved_at = new Date().toISOString();
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    } catch (err) { /* Private browsing/storage limits: form still works. */ }
+  }
+
+  function restoreDraft(){
+    try {
+      const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+      if (!draft) return;
+      DRAFT_FIELDS.forEach((id) => {
+        if (typeof draft[id] === 'string') document.getElementById(id).value = draft[id];
+      });
+    } catch (err) { /* Ignore unreadable/expired browser storage. */ }
+  }
+
+  function clearDraft(){
+    try { localStorage.removeItem(DRAFT_KEY); } catch (err) { /* no-op */ }
+  }
 
   function showSuccess(){
+    clearErrors();
+    clearDraft();
     errorEl.classList.remove('show'); errorEl.style.display = 'none';
     form.style.display = 'none';
     successEl.classList.add('show');
   }
-  function showError(){
+  function showError(message, title){
     successEl.classList.remove('show');
+    errorTitleEl.textContent = title || 'We could not confirm your submission.';
+    errorMessageEl.innerHTML = '';
+    errorMessageEl.append(document.createTextNode(message || 'Your information is still saved on this device. Please try again, call '));
+    if (!message) {
+      const phoneLink = document.createElement('a');
+      phoneLink.href = 'tel:+14072672652'; phoneLink.textContent = '(407) 267-2652';
+      errorMessageEl.append(phoneLink, document.createTextNode(', or message us on '));
+      const whatsappLink = document.createElement('a');
+      whatsappLink.href = 'https://wa.me/message/JUQP57VLU3T2B1'; whatsappLink.textContent = 'WhatsApp';
+      errorMessageEl.append(whatsappLink, document.createTextNode('.'));
+    }
     errorEl.style.display = 'block';
   }
 
+  function showApiError(data){
+    const fieldErrors = data && data.field_errors ? data.field_errors : {};
+    Object.entries(fieldErrors).forEach(([field, message]) => setFieldError(field, message));
+    const firstInvalid = form.querySelector('[aria-invalid="true"]');
+    showError(
+      (data && data.message) || 'Please correct the highlighted information and try again.',
+      Object.keys(fieldErrors).length ? 'Please correct the highlighted information.' : 'We could not send your information.'
+    );
+    if (firstInvalid) firstInvalid.focus();
+  }
+
+  installFieldErrors();
+  restoreDraft();
+  DRAFT_FIELDS.forEach((id) => {
+    const input = document.getElementById(id);
+    input.addEventListener('input', saveDraft);
+    input.addEventListener('change', saveDraft);
+  });
+
   async function handleLeadSubmit(e){
     e.preventDefault();
+    clearErrors();
+    saveDraft();
 
     // Honeypot — invisible to real visitors, bots tend to fill every field.
     // Silently pretend success without sending anything anywhere.
@@ -633,12 +742,15 @@
     const service   = document.getElementById('SERVICE_INTERESTED').value;
     const consent   = document.getElementById('CONSENT').checked;
 
-    if (!firstName || !email || !state || !service) {
-      alert('Please fill in all required fields.');
-      return;
-    }
-    if (!consent) {
-      alert('Please check the box so I can follow up with you.');
+    const clientErrors = {};
+    if (!firstName) clientErrors.first_name = 'Enter your first name.';
+    if (!email) clientErrors.email = 'Enter your email address.';
+    if (!phone) clientErrors.phone = 'Enter your phone number.';
+    if (!state) clientErrors.state = 'Select your state.';
+    if (!service) clientErrors.service = 'Select the service you need.';
+    if (!consent) clientErrors.consent = 'Check this box so we have permission to contact you.';
+    if (Object.keys(clientErrors).length) {
+      showApiError({ field_errors: clientErrors, message: 'Complete each highlighted field, then try again.' });
       return;
     }
 
@@ -670,38 +782,12 @@
         submitBtn.disabled = false; submitBtn.textContent = 'Send my info';
         return;
       }
-      showError();
+      showApiError(data);
       submitBtn.disabled = false; submitBtn.textContent = 'Send my info';
       return;
     } catch (err) {
-      // Worker unreachable at all — fall through to the last-resort path.
-    }
-
-    // ── Attempt 2: last resort — straight to Brevo, the original way ──────
-    try {
-      const params = new URLSearchParams();
-      params.append('FIRSTNAME', firstName);
-      params.append('EMAIL', email);
-      if (phone) {
-        const digits = phone.replace(/\D/g, '');
-        params.append('SMS__COUNTRY_CODE', '+1');
-        params.append('SMS', digits.length === 10 ? '1' + digits : digits);
-      }
-      if (dob) params.append('DOB', dob);
-      params.append('SERVICE_INTERESTED', service);
-      params.append('STATE', state);
-      params.append('email_address_check', '');
-      params.append('locale', 'en');
-      params.append('html_type', 'simple');
-
-      await fetch(BREVO_FORM_ACTION, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString()
-      });
-      showSuccess();
-    } catch (err) {
+      // Do not claim success when delivery cannot be verified. The saved
+      // browser draft lets the client retry without re-entering their data.
       showError();
     }
     submitBtn.disabled = false; submitBtn.textContent = 'Send my info';
