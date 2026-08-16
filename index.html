@@ -718,6 +718,9 @@
 
   installFieldErrors();
   restoreDraft();
+  // Some browsers run their autofill pass after the initial script and may
+  // clear restored email/phone values. Restore once more after that pass.
+  window.addEventListener('pageshow', () => setTimeout(restoreDraft, 150));
   DRAFT_FIELDS.forEach((id) => {
     const input = document.getElementById(id);
     input.addEventListener('input', saveDraft);
