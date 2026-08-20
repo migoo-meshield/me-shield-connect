@@ -525,7 +525,7 @@
 
     <iframe name="hidden_iframe_lead" style="display:none;"></iframe>
 
-    <form id="leadForm" method="POST"
+    <form id="leadForm" method="POST" novalidate
       action="https://d95daacd.sibforms.com/serve/MUIFAHK9mbfTz7NT4NmoGQRdq0HRHnfAyTuFstSolDZCjOBgnDmdgLfmqgKAcBXk92nVGgYAB2mFWwqDjKbmSwBHWmffeZIlIoKQjLaiBTBDfy3qKvQ9DpT6kfbBmdNviqdnRkrBH-Y0BZHZrQ4Om0hg8E5SnOZKP_zi_5obtHazll-sl8-UXLGTFKB2EYJgZKkOV0pKkZC5prxZfg=="
       target="hidden_iframe_lead">
 
@@ -628,6 +628,14 @@
     service: 'SERVICE_INTERESTED', consent: 'CONSENT'
   };
   const DRAFT_FIELDS = ['FIRSTNAME', 'EMAIL', 'SMS', 'DOB', 'STATE', 'SERVICE_INTERESTED'];
+  const COMMON_EMAIL_TYPOS = {
+    'gmail.co': 'gmail.com', 'gamil.com': 'gmail.com', 'gmial.com': 'gmail.com',
+    'gmai.com': 'gmail.com', 'gmail.con': 'gmail.com',
+    'yaho.com': 'yahoo.com', 'yahoo.co': 'yahoo.com', 'yahoo.con': 'yahoo.com',
+    'hotmal.com': 'hotmail.com', 'hotmail.co': 'hotmail.com', 'hotmail.con': 'hotmail.com',
+    'outlook.co': 'outlook.com', 'outlook.con': 'outlook.com',
+    'icloud.co': 'icloud.com', 'icloud.con': 'icloud.com'
+  };
 
   function installFieldErrors(){
     Object.values(FIELD_MAP).forEach((id) => {
@@ -661,6 +669,77 @@
     input.setAttribute('aria-describedby', messageEl.id);
     messageEl.textContent = message;
     messageEl.classList.add('show');
+  }
+
+  function clearFieldError(field){
+    const id = FIELD_MAP[field];
+    const input = id && document.getElementById(id);
+    const messageEl = id && document.getElementById(id + '-error');
+    if (input) { input.removeAttribute('aria-invalid'); input.removeAttribute('aria-describedby'); }
+    if (messageEl) { messageEl.textContent = ''; messageEl.classList.remove('show'); }
+  }
+
+  function emailSuggestion(email){
+    const parts = email.toLowerCase().split('@');
+    if (parts.length !== 2 || !parts[0]) return null;
+    const correctedDomain = COMMON_EMAIL_TYPOS[parts[1]];
+    return correctedDomain ? `${parts[0]}@${correctedDomain}` : null;
+  }
+
+  function validateFields(values){
+    const errors = {};
+    if (!values.firstName) {
+      errors.first_name = 'Enter your first name.';
+    } else if (values.firstName.length < 2 || !/^[\p{L}\p{M}][\p{L}\p{M}'’ .-]*$/u.test(values.firstName)) {
+      errors.first_name = 'Enter a valid first name using letters, spaces, apostrophes, or hyphens.';
+    }
+
+    if (!values.email) {
+      errors.email = 'Enter your email address.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(values.email)) {
+      errors.email = 'Enter a complete email address, such as name@example.com.';
+    } else {
+      const suggestion = emailSuggestion(values.email);
+      if (suggestion) errors.email = `Did you mean ${suggestion}? Please verify your email address.`;
+    }
+
+    if (!values.phone) {
+      errors.phone = 'Enter your phone number.';
+    } else {
+      const digits = values.phone.replace(/\D/g, '');
+      if (!(digits.length === 10 || (digits.length === 11 && digits.startsWith('1')))) {
+        errors.phone = 'Enter a valid 10-digit U.S. phone number.';
+      }
+    }
+
+    if (values.dob) {
+      const parts = values.dob.split('-').map(Number);
+      const date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+      const today = new Date();
+      const todayUtc = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(values.dob) ||
+          date.getUTCFullYear() !== parts[0] || date.getUTCMonth() !== parts[1] - 1 ||
+          date.getUTCDate() !== parts[2] || date.getTime() >= todayUtc || parts[0] < 1900) {
+        errors.date_of_birth = 'Enter a real date of birth. It cannot be today or a future date.';
+      }
+    }
+
+    if (!values.state) errors.state = 'Select your state.';
+    if (!values.service) errors.service = 'Select the service you need.';
+    if (!values.consent) errors.consent = 'Check this box so we have permission to contact you.';
+    return errors;
+  }
+
+  function currentFieldValues(){
+    return {
+      firstName: document.getElementById('FIRSTNAME').value.trim(),
+      email: document.getElementById('EMAIL').value.trim(),
+      phone: document.getElementById('SMS').value.trim(),
+      dob: document.getElementById('DOB').value,
+      state: document.getElementById('STATE').value,
+      service: document.getElementById('SERVICE_INTERESTED').value,
+      consent: document.getElementById('CONSENT').checked
+    };
   }
 
   function saveDraft(){
@@ -730,6 +809,20 @@
     input.addEventListener('input', saveDraft);
     input.addEventListener('change', saveDraft);
   });
+  Object.entries(FIELD_MAP).forEach(([field, id]) => {
+    const input = document.getElementById(id);
+    if (!input) return;
+    input.addEventListener('input', () => clearFieldError(field));
+    input.addEventListener('change', () => {
+      clearFieldError(field);
+      const error = validateFields(currentFieldValues())[field];
+      if (error) setFieldError(field, error);
+    });
+    input.addEventListener('blur', () => {
+      const error = validateFields(currentFieldValues())[field];
+      if (error) setFieldError(field, error);
+    });
+  });
 
   async function handleLeadSubmit(e){
     e.preventDefault();
@@ -741,21 +834,9 @@
     const honeypot = form.querySelector('[name="email_address_check"]').value;
     if (honeypot) { showSuccess(); return; }
 
-    const firstName = document.getElementById('FIRSTNAME').value.trim();
-    const email     = document.getElementById('EMAIL').value.trim();
-    const phone     = document.getElementById('SMS').value.trim();
-    const dob       = document.getElementById('DOB').value;
-    const state     = document.getElementById('STATE').value;
-    const service   = document.getElementById('SERVICE_INTERESTED').value;
-    const consent   = document.getElementById('CONSENT').checked;
-
-    const clientErrors = {};
-    if (!firstName) clientErrors.first_name = 'Enter your first name.';
-    if (!email) clientErrors.email = 'Enter your email address.';
-    if (!phone) clientErrors.phone = 'Enter your phone number.';
-    if (!state) clientErrors.state = 'Select your state.';
-    if (!service) clientErrors.service = 'Select the service you need.';
-    if (!consent) clientErrors.consent = 'Check this box so we have permission to contact you.';
+    const values = currentFieldValues();
+    const { firstName, email, phone, dob, state, service, consent } = values;
+    const clientErrors = validateFields(values);
     if (Object.keys(clientErrors).length) {
       showApiError({ field_errors: clientErrors, message: 'Complete each highlighted field, then try again.' });
       return;
