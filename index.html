@@ -539,8 +539,8 @@
         <input type="tel" id="SMS" name="SMS" placeholder="Phone number" autocomplete="tel" required>
       </div>
       <div class="lead-field">
-        <label for="DOB" style="display:block; margin:0 0 6px; font-size:13px; color:#5b5648;">Date of Birth / Dat Nesans</label>
-        <input type="date" id="DOB" name="DOB" autocomplete="bday" required>
+        <label for="DOB" style="display:block; margin:0 0 6px; font-size:13px; color:#5b5648;">Date of Birth / Dat Nesans <span style="font-weight:400;">(optional)</span></label>
+        <input type="date" id="DOB" name="DOB" autocomplete="bday">
       </div>
       <div class="lead-field">
         <select id="STATE" name="STATE" required>
@@ -712,9 +712,7 @@
       }
     }
 
-    if (!values.dob) {
-      errors.date_of_birth = 'Enter your date of birth.';
-    } else {
+    if (values.dob) {
       const parts = values.dob.split('-').map(Number);
       const date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
       const today = new Date();
