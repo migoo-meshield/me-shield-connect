@@ -47,6 +47,24 @@
     justify-content:center;
     overflow:hidden;
   }
+  /* The shield crest, sitting inside the navy gradient as a watermark. Gold at
+     7% reads as texture on the navy rather than as a second logo competing with
+     the seal on the photo. The bottom of it is masked away so it dissolves into
+     the gradient instead of ending on a hard edge just above the card. */
+  .hero::before{
+    content:"";
+    position:absolute;
+    top:7%;
+    left:50%;
+    height:88%;
+    aspect-ratio:457 / 640;
+    transform:translateX(-50%);
+    background:url("me-watermark.webp") center / contain no-repeat;
+    opacity:.08;
+    pointer-events:none;
+    -webkit-mask-image:linear-gradient(180deg, #000 74%, transparent 99%);
+    mask-image:linear-gradient(180deg, #000 74%, transparent 99%);
+  }
   .hero::after{
     content:"";
     position:absolute;
@@ -56,6 +74,8 @@
     opacity:.6;
   }
   .hero-inner{
+    position:relative;
+    z-index:1;
     width:100%;
     max-width:420px;
     display:flex;
